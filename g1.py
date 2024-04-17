@@ -9,7 +9,7 @@ def connect_to_database():
     endpoint = "localhost"  # MySQL server endpoint
     username = "root"       # MySQL username
     password = ""           # MySQL password (leave empty if no password)
-    database = "Place"      # MySQL database name
+    database = "Placement"      # MySQL database name
     connection = mysql.connector.connect(
         host=endpoint,
         user=username,
