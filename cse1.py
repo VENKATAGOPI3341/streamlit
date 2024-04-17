@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px
 import mysql.connector
 
+st.set_page_config(page_title="CSE", page_icon="", layout="wide")
+
 # Function to connect to the database
 def connect_to_database():
     endpoint = "localhost"
@@ -27,22 +29,25 @@ def fetch_data(query):
     connection.close()
     return data
 
-# st.title("Placement Dashboard for Computer Science Students")
-
+# Main function to display the dashboard
 def main():
     st.title("Placement Dashboard for Computer Science Students")
-    
+
+    # Define the layout using Streamlit columns with adjusted width
+    col1, col2, col3, col4, col5, col6 = st.columns([1, 1, 1, 1, 1, 1])
+
     # Fetch data for placed and unplaced students in the CSE branch
     query_cse_placed_unplaced = "SELECT Placed, COUNT(*) AS Count FROM placement_data WHERE Branch = 'COMPUTER SCIENCE' GROUP BY Placed"
     cse_placed_unplaced_data = fetch_data(query_cse_placed_unplaced)
-
+    
     # Create DataFrame for CSE branch
     df_cse_placed_unplaced = pd.DataFrame(cse_placed_unplaced_data, columns=['Placed', 'Count'])
 
     # Visualize the data with a pie chart
     fig_cse_placed_unplaced_pie = px.pie(df_cse_placed_unplaced, values='Count', names='Placed', title='Placement Status for CSE Branch')
     fig_cse_placed_unplaced_pie.update_traces(marker=dict(colors=['#1f77b4', '#ff7f0e']))
-    st.plotly_chart(fig_cse_placed_unplaced_pie)
+    col1.plotly_chart(fig_cse_placed_unplaced_pie, use_container_width=True)
+    col1.write("")  # Add empty space
 
     # Fetch data for packages offered to CSE branch students
     query_cse_packages = "SELECT Package FROM placement_data WHERE Branch = 'COMPUTER SCIENCE'"
@@ -54,7 +59,8 @@ def main():
     # Visualize the data with a histogram or box plot
     # Here, I'll use a histogram to show the distribution of packages
     fig_cse_packages_hist = px.histogram(df_cse_packages, x='Package', title='Distribution of Packages for CSE Branch', color_discrete_sequence=['#2ca02c'])
-    st.plotly_chart(fig_cse_packages_hist)
+    col2.plotly_chart(fig_cse_packages_hist, use_container_width=True)
+    col2.write("")  # Add empty space
 
     # Query to fetch data for students with backlogs, from CSE department, and with a package
     query = """
@@ -67,9 +73,6 @@ def main():
     # Create DataFrame from fetched data
     df_backlog_cse_package = pd.DataFrame(backlog_cse_package_data, columns=['Name', 'Branch', 'Package'])
 
-    # Display DataFrame
-    # st.write(df_backlog_cse_package)
-    
     # Visualize the data with a scatter plot
     fig_backlog_cse_package = px.scatter(df_backlog_cse_package, x='Name', y='Package', color='Branch',
                                          title='Packages for Computer Science Branch with Backlogs',
@@ -77,9 +80,10 @@ def main():
                                          hover_name='Name')
     fig_backlog_cse_package.update_traces(marker=dict(size=12))
     fig_backlog_cse_package.update_layout(showlegend=True)
-    st.plotly_chart(fig_backlog_cse_package)
+    col3.plotly_chart(fig_backlog_cse_package, use_container_width=True)
+    col3.write("")  # Add empty space
 
-    # Define the query to fetch data for Domain Count Bar Chart
+    # Fetch data for Domain Count Bar Chart
     query_domain_count = """
         SELECT Domain, COUNT(*) AS Count 
         FROM placement_data 
@@ -98,7 +102,8 @@ def main():
                                   title='Domain-wise Student Count for CSE Department',
                                   labels={'Domain': 'Domain', 'Count': 'Student Count'},
                                   color='Domain')
-    st.plotly_chart(fig_domain_count_bar)
+    col4.plotly_chart(fig_domain_count_bar, use_container_width=True)
+    col4.write("")  # Add empty space
 
     # Define the query to fetch data for Package vs. CGPA Scatter Plot
     query_package_cgpa = """
@@ -118,7 +123,8 @@ def main():
                                           title='Package vs. CGPA for Placed Students in CSE Department',
                                           labels={'CGPA': 'CGPA', 'Package': 'Package Amount'},
                                           trendline='ols')
-    st.plotly_chart(fig_package_cgpa_scatter)
+    col5.plotly_chart(fig_package_cgpa_scatter, use_container_width=True)
+    col5.write("")  # Add empty space
 
     # Define the query to fetch data for Company Placement Bar Chart
     query_company_placement = """
@@ -131,14 +137,15 @@ def main():
     company_placement_data = fetch_data(query_company_placement)
     # Create DataFrame for Company Placement Bar Chart
     df_company_placement = pd.DataFrame(company_placement_data, columns=['Company_placed', 'Placement_Count'])
+    
     # Visualize the data with a horizontal bar chart
     fig_company_placement_bar_horizontal = px.bar(df_company_placement, y='Company_placed', x='Placement_Count', 
                                                    title='Company-wise Placement Count for CSE Department',
                                                    labels={'Company_placed': 'Company', 'Placement_Count': 'Placement Count'},
                                                    color='Company_placed',
                                                    orientation='h')
-    st.plotly_chart(fig_company_placement_bar_horizontal)
-
+    col6.plotly_chart(fig_company_placement_bar_horizontal, use_container_width=True)
+    col6.write("")  # Add empty space
 
 if __name__ == "__main__":
     main()
